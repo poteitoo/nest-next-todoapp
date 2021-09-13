@@ -11,10 +11,10 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
-    const user = this.usersService.findOne(username);
+    const user = await this.usersService.findByUsername(username);
 
-    // if (user && (await bcrypt.compare(user.password, pass))) {
-    if (user && user.password === pass) {
+    if (user && (await bcrypt.compare(user.password, pass))) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;
       return result;
     }
@@ -27,10 +27,5 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
     };
-  }
-
-  async makeHash(password: string): Promise<string> {
-    const salt = await bcrypt.genSalt();
-    return await bcrypt.hash(password, salt);
   }
 }
