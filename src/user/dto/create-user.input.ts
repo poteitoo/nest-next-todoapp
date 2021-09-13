@@ -1,7 +1,14 @@
-import { InputType, Int, Field } from '@nestjs/graphql';
+import { Field, InputType, OmitType, PartialType } from '@nestjs/graphql';
+import { User } from 'src/user/entities/user.entity';
 
 @InputType()
-export class CreateUserInput {
-  @Field(() => Int, { description: 'Example field (placeholder)' })
-  exampleField: number;
+export class CreateUserInput extends PartialType(
+  OmitType(User, ['id'] as const),
+  InputType,
+) {
+  @Field()
+  username: string;
+
+  @Field()
+  password: string;
 }
