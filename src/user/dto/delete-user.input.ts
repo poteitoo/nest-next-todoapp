@@ -1,5 +1,5 @@
 import { InputType, PickType } from '@nestjs/graphql';
-import { User } from 'src/user/entities/user.entity';
+import { User } from '../entities/user.entity';
 
 @InputType()
 export class DeleteUserInput extends PickType(
