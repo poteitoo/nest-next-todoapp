@@ -16,14 +16,9 @@ export class UserResolver {
     return this.userService.create(createUserInput);
   }
 
-  @Query(() => [User], { name: 'user' })
-  findAll() {
-    return this.userService.findAll();
-  }
-
   @Query(() => User, { name: 'user' })
-  findOne(@Args('id', { type: () => String }) id: string) {
-    return this.userService.findOne(id);
+  findByUsername(@Args('id', { type: () => String }) id: string) {
+    return this.userService.findByUsername(id);
   }
 
   @UseGuards(GqlAuthGuard)
@@ -32,11 +27,12 @@ export class UserResolver {
     @CurrentUser() user: User,
     @Args('updateUserInput') updateUserInput: UpdateUserInput,
   ) {
-    return this.userService.update(user.id, updateUserInput);
+    return this.userService.update(user, updateUserInput);
   }
 
-  @Mutation(() => User)
-  removeUser(@Args('id', { type: () => String }) id: string) {
-    return this.userService.remove(id);
+  @UseGuards(GqlAuthGuard)
+  @Mutation(() => Boolean)
+  removeUser(@CurrentUser() user: User) {
+    return this.userService.delete(user.id);
   }
 }
