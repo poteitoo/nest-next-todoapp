@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 @Injectable()
 export class UserService {
@@ -28,11 +27,10 @@ export class UserService {
 
   async update(user: User, updateUserInput: DeepPartial<User>): Promise<User> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { id: _id, password, ...content } = updateUserInput;
-    const pass = await makeHash(password);
+    const { id, password, ...content } = updateUserInput;
     await this.userRepository.update(user.id, {
       ...content,
-      password: password ? pass : user.password,
+      password: password ? await makeHash(password) : user.password,
     });
     return this.findById(user.id);
   }
@@ -44,6 +42,6 @@ export class UserService {
 }
 
 const makeHash = async (password: string): Promise<string> => {
-  const salt = await bcrypt.genSalt();
+  const salt = await bcrypt.genSalt(10, 'b');
   return await bcrypt.hash(password, salt);
 };
